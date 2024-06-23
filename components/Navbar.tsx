@@ -37,7 +37,10 @@ export default function Navbar() {
             <button
               type="button"
               className=" text-black text-xs md:text-base"
-              onClick={() => localStorage.removeItem("token")}
+              onClick={() => {
+                localStorage.clear();
+                location.reload();
+              }}
             >
               &nbsp;Sign Out
             </button>

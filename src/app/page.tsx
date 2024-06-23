@@ -85,7 +85,7 @@ export default function Home() {
 
         <div className="px-10">
           <div className="flex justify-between" style={{ marginTop: 120 }}>
-            <div className="absolute top-0 left-0 w-full bg-white ">
+            {/* <div className="absolute top-0 left-0 w-full bg-white ">
               <div className="flex justify-between items-center p-4">
                 <div className="flex items-center">
                   <Link href="/">
@@ -121,7 +121,7 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="grid gap-10 xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex flex-col ">
               {categories?.map(
                 (category, index) =>
