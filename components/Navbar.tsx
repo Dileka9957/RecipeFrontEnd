@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -32,7 +34,11 @@ export default function Navbar() {
             </Link>
           </div>
           <div className="flex items-center">
-            <button type="button" className=" text-black text-xs md:text-base">
+            <button
+              type="button"
+              className=" text-black text-xs md:text-base"
+              onClick={() => localStorage.removeItem("token")}
+            >
               &nbsp;Sign Out
             </button>
           </div>

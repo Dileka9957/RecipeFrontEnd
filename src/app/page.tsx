@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import Modal from "../../components/Modal";
 import Navbar from "../../components/Navbar";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("Beef");
@@ -15,13 +16,18 @@ export default function Home() {
     strMealThumb: "",
   });
   const [isOpenModel, setIsOpenModel] = useState(false);
-  const [isFavourite, setIsFavourite] = useState(false);
+  // const [isFavourite, setIsFavourite] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     axios
-      .get(
-        `http://localhost:5000/recipes/getMealsByCategory/${selectedCategory}`
-      )
+      .get(`http://localhost:5000/meal/getMealsByCategory/${selectedCategory}`)
       .then((response) => {
         // console.log("response", response.data);
         setMeals(response?.data?.meals);
@@ -33,7 +39,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/recipes/getAllMealCategories")
+      .get("http://localhost:5000/meal/getAllMealCategories")
       .then((response) => {
         // console.log("response", response.data);
         setCategories(response?.data);
@@ -43,11 +49,16 @@ export default function Home() {
       });
   }, []);
 
-  const handleAddToFavorites = (meal) => {
+  interface Meal {
+    strMeal: string;
+    strMealThumb: string;
+  }
+  const handleAddToFavorites = (meal: Meal) => {
     axios
-      .post("http://localhost:5000/favorites/add", { meal })
+      .post("http://localhost:5000/meal/addFavouriteMeals", { meal })
       .then((response) => {
-        if (response.data.success) {
+        // console.log("resp", response);
+        if ((response.status = 201)) {
           alert("Meal added to favorites!");
         }
       })
@@ -56,6 +67,7 @@ export default function Home() {
           "There was an error adding the meal to favorites!",
           error
         );
+        alert(`Failed to add meal:${error}`);
       });
   };
 
@@ -68,12 +80,49 @@ export default function Home() {
           meal={clickedMeal}
         />
       )}
-      <div className=" h-screen justify-center bg-white z-10 overflow-y-auto">
+      <div className=" h-screen justify-center bg-[#eee6f0] z-10 overflow-y-auto">
         <Navbar />
 
         <div className="px-10">
           <div className="flex justify-between" style={{ marginTop: 120 }}>
-            <div className="grid gap-10 xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex flex-col ">
+            <div className="absolute top-0 left-0 w-full bg-white ">
+              <div className="flex justify-between items-center p-4">
+                <div className="flex items-center">
+                  <Link href="/">
+                    <Image
+                      src="/logo.png"
+                      width={100}
+                      height={0}
+                      className="mx-auto "
+                      alt=""
+                    />
+                  </Link>
+                </div>
+                <div className="flex justify-between gap-10">
+                  <Link
+                    className="text-black text-xs md:text-base uppercase"
+                    href={"/"}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    className="text-black text-xs md:text-base uppercase"
+                    href={"/favourite"}
+                  >
+                    Favourite
+                  </Link>
+                </div>
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    className=" text-black text-xs md:text-base"
+                  >
+                    &nbsp;Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="grid gap-10 xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex flex-col ">
               {categories?.map(
                 (category, index) =>
                   category !== null && (
@@ -123,20 +172,14 @@ export default function Home() {
                         }}
                         className="bg-zinc-400 rounded-3xl"
                       ></div>
-                      <div className="flex justify-between items">
-                        <h2 className="text-md mt-3 text-gray-600 font-medium mt-0 mr-2">
+                      <div className="flex justify-between mt-3">
+                        <h2 className="text-md text-gray-600 font-medium mt-0 mr-2">
                           Soup
                         </h2>
-                        {/* <button>
-                          <svg
-                            className="text-red-400 w-5 h-auto fill-current"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                          >
-                            <path d="M0 190.9V185.1C0 115.2 50.52 55.58 119.4 44.1C164.1 36.51 211.4 51.37 244 84.02L256 96L267.1 84.02C300.6 51.37 347 36.51 392.6 44.1C461.5 55.58 512 115.2 512 185.1V190.9C512 232.4 494.8 272.1 464.4 300.4L283.7 469.1C276.2 476.1 266.3 480 256 480C245.7 480 235.8 476.1 228.3 469.1L47.59 300.4C17.23 272.1 .0003 232.4 .0003 190.9L0 190.9z" />
-                          </svg>
-                        </button> */}
+
                         <button
+                          type="button"
+                          title="no title"
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent triggering the modal
                             handleAddToFavorites(meal);
